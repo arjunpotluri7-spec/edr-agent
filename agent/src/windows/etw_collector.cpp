@@ -78,14 +78,21 @@ enum InType : USHORT {
   kHexInt64 = 21,
 };
 #ifdef _MSC_VER
-static_assert(kUnicodeString == TDH_INTYPE_UNICODESTRING && kAnsiString == TDH_INTYPE_ANSISTRING);
-static_assert(kInt8 == TDH_INTYPE_INT8 && kUInt8 == TDH_INTYPE_UINT8);
-static_assert(kInt16 == TDH_INTYPE_INT16 && kUInt16 == TDH_INTYPE_UINT16);
-static_assert(kInt32 == TDH_INTYPE_INT32 && kUInt32 == TDH_INTYPE_UINT32);
-static_assert(kInt64 == TDH_INTYPE_INT64 && kUInt64 == TDH_INTYPE_UINT64);
-static_assert(kBoolean == TDH_INTYPE_BOOLEAN && kBinary == TDH_INTYPE_BINARY);
-static_assert(kPointer == TDH_INTYPE_POINTER && kFileTime == TDH_INTYPE_FILETIME);
-static_assert(kHexInt32 == TDH_INTYPE_HEXINT32 && kHexInt64 == TDH_INTYPE_HEXINT64);
+// Compare as integers: comparing two different enum types is deprecated in C++20 (MSVC C5054).
+constexpr bool same_value(InType ours, _TDH_IN_TYPE sdk) {
+  return static_cast<int>(ours) == static_cast<int>(sdk);
+}
+static_assert(same_value(kUnicodeString, TDH_INTYPE_UNICODESTRING) &&
+              same_value(kAnsiString, TDH_INTYPE_ANSISTRING));
+static_assert(same_value(kInt8, TDH_INTYPE_INT8) && same_value(kUInt8, TDH_INTYPE_UINT8));
+static_assert(same_value(kInt16, TDH_INTYPE_INT16) && same_value(kUInt16, TDH_INTYPE_UINT16));
+static_assert(same_value(kInt32, TDH_INTYPE_INT32) && same_value(kUInt32, TDH_INTYPE_UINT32));
+static_assert(same_value(kInt64, TDH_INTYPE_INT64) && same_value(kUInt64, TDH_INTYPE_UINT64));
+static_assert(same_value(kBoolean, TDH_INTYPE_BOOLEAN) && same_value(kBinary, TDH_INTYPE_BINARY));
+static_assert(same_value(kPointer, TDH_INTYPE_POINTER) &&
+              same_value(kFileTime, TDH_INTYPE_FILETIME));
+static_assert(same_value(kHexInt32, TDH_INTYPE_HEXINT32) &&
+              same_value(kHexInt64, TDH_INTYPE_HEXINT64));
 #endif
 
 bool same_guid(const GUID& a, const GUID& b) {
