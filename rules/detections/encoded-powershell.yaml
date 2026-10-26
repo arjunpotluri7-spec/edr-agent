@@ -1,0 +1,15 @@
+# PowerShell started with -EncodedCommand (or any accepted prefix such as -enc / -e).
+# The agent decodes the Base64 UTF-16LE payload (size-capped) into the decoded_command field,
+# so this rule fires only when a payload actually decodes, not on the flag alone.
+id: encoded-powershell
+title: PowerShell launched with an encoded command
+description: 'A PowerShell process was started with a Base64-encoded command, a common way to hide script content from casual review.'
+severity: high
+attack: [T1059.001, T1027]
+event_types: [process_create]
+condition:
+  all:
+    - field: image_name
+      equals: [powershell.exe, pwsh.exe]
+    - field: decoded_command
+      exists: true

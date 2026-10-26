@@ -1,0 +1,16 @@
+id: script-host-nonstandard-port
+title: Script host connected out on a non-standard port
+description: 'A shell or script interpreter connected to a public address on a port other than the usual web, DNS and WinRM ports.'
+severity: medium
+attack: [T1571]
+event_types: [network_connect]
+condition:
+  all:
+    - field: image_name
+      equals: [powershell.exe, pwsh.exe, wscript.exe, cscript.exe, mshta.exe, cmd.exe]
+    - not:
+        field: dest_port
+        equals: ['80', '443', '53', '5985', '5986']
+    - not:
+        field: dest_ip
+        cidr: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1/128', 'fe80::/10', 'fc00::/7']

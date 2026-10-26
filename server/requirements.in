@@ -1,0 +1,8 @@
+# Direct runtime dependencies (exact pins). requirements.txt adds the resolved transitive pins.
+fastapi==0.162.0
+uvicorn==0.54.0
+SQLAlchemy==2.1.6
+psycopg[binary]==3.3.6
+pydantic==2.14.1
+alembic==1.20.0
+PyYAML==6.0.3

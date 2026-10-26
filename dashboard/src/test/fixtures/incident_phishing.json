@@ -1,0 +1,225 @@
+{
+  "id": "inc-daa79e6655ed192a",
+  "host": "WS-ALICE-01",
+  "score": 100,
+  "label": "critical",
+  "agent_score": 100,
+  "server_score": 100,
+  "score_mismatch": false,
+  "first_seen": "2026-10-20T09:15:10.000Z",
+  "last_seen": "2026-10-20T09:15:13.000Z",
+  "root_image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE",
+  "root_pid": 4000,
+  "signal_count": 4,
+  "attack": [
+    "T1027",
+    "T1059.001",
+    "T1071",
+    "T1204.002",
+    "T1566.001",
+    "T1571"
+  ],
+  "signals": [
+    {
+      "rule_id": "encoded-powershell",
+      "title": "PowerShell launched with an encoded command",
+      "severity": "high",
+      "points": 40,
+      "base_points": 40,
+      "repeat": 0,
+      "ts": "2026-10-20T09:15:10.000Z",
+      "pid": 5208,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "event_id": "sysmon-WS-ALICE-01-1006",
+      "detail": "powershell.exe",
+      "attack": [
+        "T1059.001",
+        "T1027"
+      ]
+    },
+    {
+      "rule_id": "office-spawns-script-host",
+      "title": "Office application started a script host",
+      "severity": "high",
+      "points": 30,
+      "base_points": 30,
+      "repeat": 0,
+      "ts": "2026-10-20T09:15:10.000Z",
+      "pid": 5208,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "event_id": "sysmon-WS-ALICE-01-1006",
+      "detail": "powershell.exe",
+      "attack": [
+        "T1566.001",
+        "T1204.002"
+      ]
+    },
+    {
+      "rule_id": "script-host-nonstandard-port",
+      "title": "Script host connected out on a non-standard port",
+      "severity": "medium",
+      "points": 25,
+      "base_points": 25,
+      "repeat": 0,
+      "ts": "2026-10-20T09:15:13.000Z",
+      "pid": 5208,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "event_id": "sysmon-WS-ALICE-01-1008",
+      "detail": "203.0.113.50:8443",
+      "attack": [
+        "T1571"
+      ]
+    },
+    {
+      "rule_id": "anomalous-outbound",
+      "title": "Outbound connection not in the host baseline",
+      "severity": "medium",
+      "points": 35,
+      "base_points": 35,
+      "repeat": 0,
+      "ts": "2026-10-20T09:15:13.000Z",
+      "pid": 5208,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "event_id": "sysmon-WS-ALICE-01-1008",
+      "detail": "203.0.113.50:8443 not in baseline for powershell.exe",
+      "attack": [
+        "T1071"
+      ]
+    }
+  ],
+  "correlations": [
+    {
+      "id": "office-macro-chain",
+      "title": "Office application started a script host that ran encoded PowerShell",
+      "multiplier_percent": 125,
+      "bonus": 0,
+      "min_score": 0
+    },
+    {
+      "id": "encoded-ps-then-network",
+      "title": "Encoded PowerShell followed by an anomalous outbound connection",
+      "multiplier_percent": 150,
+      "bonus": 0,
+      "min_score": 60
+    }
+  ],
+  "breakdown": [
+    {
+      "kind": "signal",
+      "rule_id": "encoded-powershell",
+      "label": "PowerShell launched with an encoded command",
+      "detail": "powershell.exe",
+      "points": 40
+    },
+    {
+      "kind": "signal",
+      "rule_id": "office-spawns-script-host",
+      "label": "Office application started a script host",
+      "detail": "powershell.exe",
+      "points": 30
+    },
+    {
+      "kind": "signal",
+      "rule_id": "script-host-nonstandard-port",
+      "label": "Script host connected out on a non-standard port",
+      "detail": "203.0.113.50:8443",
+      "points": 25
+    },
+    {
+      "kind": "signal",
+      "rule_id": "anomalous-outbound",
+      "label": "Outbound connection not in the host baseline",
+      "detail": "203.0.113.50:8443 not in baseline for powershell.exe",
+      "points": 35
+    },
+    {
+      "kind": "multiplier",
+      "correlation": "office-macro-chain",
+      "label": "Office application started a script host that ran encoded PowerShell",
+      "multiplier_percent": 125,
+      "before": 130,
+      "after": 163
+    },
+    {
+      "kind": "multiplier",
+      "correlation": "encoded-ps-then-network",
+      "label": "Encoded PowerShell followed by an anomalous outbound connection",
+      "multiplier_percent": 150,
+      "before": 163,
+      "after": 245
+    },
+    {
+      "kind": "cap",
+      "label": "score capped at 100",
+      "after": 100
+    }
+  ],
+  "process_tree": [
+    {
+      "pid": 4000,
+      "ppid": 3100,
+      "image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE",
+      "command_line": "\"C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE\"",
+      "start": "2026-10-20T09:14:20.000Z",
+      "depth": 0
+    },
+    {
+      "pid": 4120,
+      "ppid": 4000,
+      "image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+      "command_line": "\"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE\" /n \"C:\\Users\\alice\\AppData\\Local\\Microsoft\\Windows\\INetCache\\Content.Outlook\\Q7R2KX1M\\Invoice_2291.docm\" /o \"\"",
+      "start": "2026-10-20T09:15:02.000Z",
+      "depth": 1
+    },
+    {
+      "pid": 5208,
+      "ppid": 4120,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "command_line": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -WindowStyle Hidden -EncodedCommand VwByAGkAdABlAC0ATwB1AHQAcAB1AHQAIAAnAGUAZAByAC0AYQBnAGUAbgB0ACAAZABlAG0AbwA6ACAAcwBpAG0AdQBsAGEAdABlAGQAIABkAG8AdwBuAGwAbwBhAGQAIABjAHIAYQBkAGwAZQAnAA==",
+      "start": "2026-10-20T09:15:10.000Z",
+      "depth": 2
+    }
+  ],
+  "evidence": [
+    {
+      "id": "sysmon-WS-ALICE-01-1006",
+      "ts": "2026-10-20T09:15:10.000Z",
+      "host": "WS-ALICE-01",
+      "source": "sysmon",
+      "type": "process_create",
+      "sysmon_event_id": 1,
+      "record_id": 1006,
+      "pid": 5208,
+      "ppid": 4120,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "command_line": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -WindowStyle Hidden -EncodedCommand VwByAGkAdABlAC0ATwB1AHQAcAB1AHQAIAAnAGUAZAByAC0AYQBnAGUAbgB0ACAAZABlAG0AbwA6ACAAcwBpAG0AdQBsAGEAdABlAGQAIABkAG8AdwBuAGwAbwBhAGQAIABjAHIAYQBkAGwAZQAnAA==",
+      "user": "CORP\\alice",
+      "integrity_level": "Medium",
+      "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1",
+      "process_guid": "{5770385f-be13-e9f2-d4cf-818687c03fdc}",
+      "parent_process_guid": "{5770385f-d7aa-c2f2-f2a6-08af1636e0fa}",
+      "parent_image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+      "decoded_command": "Write-Output 'edr-agent demo: simulated download cradle'"
+    },
+    {
+      "id": "sysmon-WS-ALICE-01-1008",
+      "ts": "2026-10-20T09:15:13.000Z",
+      "host": "WS-ALICE-01",
+      "source": "sysmon",
+      "type": "network_connect",
+      "sysmon_event_id": 3,
+      "record_id": 1008,
+      "pid": 5208,
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "user": "CORP\\alice",
+      "process_guid": "{5770385f-be13-e9f2-d4cf-818687c03fdc}",
+      "parent_image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+      "protocol": "tcp",
+      "src_ip": "10.20.30.41",
+      "dest_ip": "203.0.113.50",
+      "initiated": true,
+      "src_port": 50122,
+      "dest_port": 8443
+    }
+  ]
+}

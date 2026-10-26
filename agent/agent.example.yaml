@@ -1,0 +1,29 @@
+# Example agent configuration. Copy to agent.yaml and adjust. Relative paths are resolved
+# against this file's directory. The enrollment token is NOT stored here: set it in the
+# environment variable named by output.token_env before starting the agent.
+agent_id: ws-alice-01          # must match an enrolled agent on the server
+host_name: ''                  # empty = this computer's name
+
+rules_dir: ../rules/detections
+scoring_file: ../rules/scoring.yaml
+baseline_file: ''              # optional JSON baseline of known (host, image, destination) pairs
+
+collectors:
+  sysmon: true                 # needs Sysmon installed (see README); reads its event log channel
+  etw: false                   # true = also start a real-time ETW session (needs Administrator)
+  etw_providers: [kernel-process, kernel-network, dns-client]
+
+queue_capacity: 10000          # events buffered between collectors and the engine
+
+output:
+  mode: spool                  # stdout | spool | http (http = WinHTTP, Windows build only)
+  spool_path: edr-agent-spool.jsonl
+  server_url: https://127.0.0.1:8443
+  token_env: EDR_AGENT_TOKEN
+  send_events: true            # also send raw telemetry (the server re-scores it)
+  batch_size: 200
+  flush_interval_seconds: 5
+
+logging:
+  level: info                  # error | warn | info | debug
+  format: text                 # text | json

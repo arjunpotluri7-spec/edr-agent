@@ -1,0 +1,17 @@
+# Detection only: this rule reads Sysmon event 10 (ProcessAccess) records that Windows and Sysmon
+# already produce. The agent itself never opens, reads or touches lsass.exe.
+id: lsass-access
+title: Process opened LSASS with memory-read access
+description: 'A process opened lsass.exe with access rights that allow reading its memory, a common step in credential theft.'
+severity: critical
+attack: [T1003.001]
+event_types: [process_access]
+condition:
+  all:
+    - field: target_image
+      endswith: '\lsass.exe'
+    - field: granted_access
+      equals: ['0x1010', '0x1410', '0x1438', '0x143a', '0x1fffff']
+    - not:
+        field: image_name
+        equals: [msmpeng.exe, csrss.exe, wininit.exe, lsm.exe]

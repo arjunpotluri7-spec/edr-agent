@@ -1,0 +1,10 @@
+id: startup-folder-drop
+title: File written to a Startup folder
+description: 'A file was created in a Startup folder, so it will run at the next logon.'
+severity: medium
+points: 30
+attack: [T1547.001]
+event_types: [file_create, file_rename]
+condition:
+  field: target_path
+  contains: '\Start Menu\Programs\Startup\'

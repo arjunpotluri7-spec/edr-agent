@@ -1,0 +1,90 @@
+# Multi-signal risk scoring. Shared by the C++ agent and the Python server, which must produce
+# identical scores for the same events (checked by server/tests/test_parity.py).
+# All arithmetic is integer; see docs/scoring.md for the exact algorithm and a worked example.
+version: 1
+
+# How long signals stay in a process tree's context. A tree with no new signal for this long is
+# closed, and signals older than this (relative to the newest one) no longer count.
+window_minutes: 10
+
+# A tree whose score reaches this becomes an Incident. Below it, hits stay as low-score signals.
+incident_threshold: 50
+
+# ... and it must contain at least this many distinct signal types (rule ids), so one rule
+# firing repeatedly never becomes an incident on its own. A critical-severity signal is exempt.
+incident_min_distinct_signals: 2
+
+# Label = the highest entry whose minimum is <= score.
+labels:
+  low: 0
+  medium: 30
+  high: 60
+  critical: 80
+
+# Default points per rule severity (a rule may override with `points:`).
+severity_points:
+  low: 10
+  medium: 25
+  high: 40
+  critical: 60
+
+# The same rule firing again in the same tree earns decay_percent of the previous hit's points,
+# and only the first max_counted hits count at all.
+repeats:
+  decay_percent: 50
+  max_counted: 3
+
+# Noise guard: all low-severity signals in one tree together add at most this many points.
+low_severity_cap: 20
+
+# Process-tree grouping: walk up the parent chain until the parent is unknown, is one of these
+# shell/service hosts (compared by lower-case file name), or max_depth is reached.
+tree:
+  boundary_images: [explorer.exe, services.exe, svchost.exe, wininit.exe, winlogon.exe, userinit.exe, smss.exe, csrss.exe, system]
+  max_depth: 16
+
+# Built-in signal for outbound connections that are not in the per-host baseline of
+# (host, image file name, destination IP). Trusted ranges are never anomalous; untrusted ranges
+# always are. With learn: true the first sighting of a pair is anomalous and the pair is then
+# added to the baseline, so a repeat connection is not.
+anomalous_outbound:
+  enabled: true
+  id: anomalous-outbound
+  title: Outbound connection not in the host baseline
+  severity: medium
+  points: 35
+  attack: [T1071]
+  learn: true
+  trusted_cidrs: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1/128', 'fe80::/10', 'fc00::/7']
+  untrusted_cidrs: [192.0.2.0/24]
+
+# Correlations: when every required signal is present in the same tree (in order if ordered is
+# true, and with the first and last no more than within_minutes apart) the score is multiplied,
+# then the bonus is added, then it is raised to at least min_score. Applied in the order listed.
+correlations:
+  - id: office-macro-chain
+    title: Office application started a script host that ran encoded PowerShell
+    requires: [office-spawns-script-host, encoded-powershell]
+    ordered: true
+    within_minutes: 10
+    multiplier: 1.25
+  - id: encoded-ps-then-network
+    title: Encoded PowerShell followed by an anomalous outbound connection
+    requires: [encoded-powershell, anomalous-outbound]
+    ordered: true
+    within_minutes: 10
+    multiplier: 1.5
+    min_score: 60
+  - id: temp-binary-persistence
+    title: Program run from Temp then registered itself to start at logon
+    requires: [exec-from-user-temp, run-key-persistence]
+    ordered: true
+    within_minutes: 10
+    bonus: 15
+  - id: lolbin-download-then-persist
+    title: LOLBin download followed by logon persistence
+    requires: [lolbin-network, startup-folder-drop]
+    ordered: false
+    within_minutes: 10
+    multiplier: 1.5
+    min_score: 60

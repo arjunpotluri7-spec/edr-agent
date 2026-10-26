@@ -1,0 +1,10 @@
+# Low severity on purpose: installers and updaters legitimately run from Temp all the time.
+id: exec-from-user-temp
+title: Program started from a user Temp folder
+description: 'A program was started from a user AppData Local Temp folder.'
+severity: low
+attack: [T1204.002]
+event_types: [process_create]
+condition:
+  field: image
+  regex: '^[a-z]:\\users\\[^\\]+\\appdata\\local\\temp\\'

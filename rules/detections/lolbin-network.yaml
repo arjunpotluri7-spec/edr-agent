@@ -1,0 +1,13 @@
+id: lolbin-network
+title: Living-off-the-land binary connected to the internet
+description: 'A Windows utility that is often abused to download or proxy-execute content made an outbound connection to a non-private address.'
+severity: medium
+attack: [T1105, T1218]
+event_types: [network_connect]
+condition:
+  all:
+    - field: image_name
+      equals: [certutil.exe, mshta.exe, rundll32.exe, regsvr32.exe, bitsadmin.exe]
+    - not:
+        field: dest_ip
+        cidr: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1/128', 'fe80::/10', 'fc00::/7']

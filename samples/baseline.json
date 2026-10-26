@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "pairs": [
+    {
+      "host": "SRV-FILES-01",
+      "image": "chrome.exe",
+      "dest": "198.51.100.20"
+    },
+    {
+      "host": "SRV-FILES-01",
+      "image": "chrome.exe",
+      "dest": "198.51.100.21"
+    },
+    {
+      "host": "SRV-FILES-01",
+      "image": "svchost.exe",
+      "dest": "198.51.100.30"
+    },
+    {
+      "host": "WS-ALICE-01",
+      "image": "outlook.exe",
+      "dest": "198.51.100.20"
+    },
+    {
+      "host": "WS-DAVE-04",
+      "image": "chrome.exe",
+      "dest": "198.51.100.60"
+    },
+    {
+      "host": "WS-DAVE-04",
+      "image": "setup_bootstrap.exe",
+      "dest": "198.51.100.61"
+    }
+  ]
+}

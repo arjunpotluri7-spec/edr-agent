@@ -1,0 +1,12 @@
+id: scheduled-task-created
+title: Scheduled task created from the command line
+description: 'schtasks.exe was used to create a scheduled task.'
+severity: medium
+attack: [T1053.005]
+event_types: [process_create]
+condition:
+  all:
+    - field: image_name
+      equals: schtasks.exe
+    - field: command_line
+      contains: '/create'

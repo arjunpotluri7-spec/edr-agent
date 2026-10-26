@@ -1,0 +1,14 @@
+id: service-created-via-registry
+title: Service ImagePath written in the registry
+description: 'A service ImagePath value was written, which is what happens when a new service is installed or an existing one is repointed.'
+severity: medium
+points: 30
+attack: [T1543.003]
+event_types: [registry_set]
+condition:
+  all:
+    - field: target_path
+      regex: '\\SYSTEM\\(CurrentControlSet|ControlSet[0-9]{3})\\Services\\[^\\]+\\ImagePath$'
+    - not:
+        field: image_name
+        equals: [trustedinstaller.exe, msiexec.exe]

@@ -1,0 +1,10 @@
+id: run-key-persistence
+title: Registry Run key written
+description: 'A value was written under a Run or RunOnce key, which makes a program start at every logon.'
+severity: medium
+points: 30
+attack: [T1547.001]
+event_types: [registry_set]
+condition:
+  field: target_path
+  regex: '\\Software\\(WOW6432Node\\)?Microsoft\\Windows\\CurrentVersion\\(Run|RunOnce)\\'

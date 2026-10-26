@@ -1,0 +1,32 @@
+# Build output and local tools
+agent/build/
+build/
+out/
+.tools/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dashboard/dist/
+
+# Local runtime data (may contain real telemetry or credentials)
+.env
+*.db
+*.sqlite
+edr-agent-spool.jsonl
+*.spool.jsonl
+*.offset
+agent.yaml
+
+# Editors and OS files
+.idea/
+.vscode/
+.DS_Store

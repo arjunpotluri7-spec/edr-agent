@@ -1,0 +1,10 @@
+# Low severity on purpose: administrators run these every day. Useful only in combination.
+id: discovery-commands
+title: Account or system discovery command
+description: 'A built-in discovery tool was run (whoami, net, nltest, systeminfo, quser).'
+severity: low
+attack: [T1033, T1087, T1082]
+event_types: [process_create]
+condition:
+  field: image_name
+  equals: [whoami.exe, net.exe, net1.exe, nltest.exe, systeminfo.exe, quser.exe]

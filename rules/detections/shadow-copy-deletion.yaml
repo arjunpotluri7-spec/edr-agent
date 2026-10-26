@@ -1,0 +1,22 @@
+id: shadow-copy-deletion
+title: Volume shadow copies deleted
+description: 'A command deleted volume shadow copies, which removes local restore points and is common before ransomware encryption.'
+severity: high
+attack: [T1490]
+event_types: [process_create]
+condition:
+  any:
+    - all:
+        - field: image_name
+          equals: vssadmin.exe
+        - field: command_line
+          contains: delete
+        - field: command_line
+          contains: shadows
+    - all:
+        - field: image_name
+          equals: wmic.exe
+        - field: command_line
+          contains: shadowcopy
+        - field: command_line
+          contains: delete

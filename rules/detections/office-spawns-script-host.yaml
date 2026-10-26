@@ -1,0 +1,13 @@
+id: office-spawns-script-host
+title: Office application started a script host
+description: 'An Office application started a shell or script interpreter, which is typical of malicious macros and rare in normal use.'
+severity: high
+points: 30
+attack: [T1566.001, T1204.002]
+event_types: [process_create]
+condition:
+  all:
+    - field: parent_image_name
+      equals: [winword.exe, excel.exe, powerpnt.exe, outlook.exe, msaccess.exe, mspub.exe, onenote.exe]
+    - field: image_name
+      equals: [powershell.exe, pwsh.exe, cmd.exe, wscript.exe, cscript.exe, mshta.exe]

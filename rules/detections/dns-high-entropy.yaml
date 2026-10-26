@@ -1,0 +1,14 @@
+# Low severity on purpose: CDNs and telemetry endpoints also use random-looking names, so this
+# is a supporting signal for correlation, not an alert on its own.
+id: dns-high-entropy
+title: DNS query for a random-looking name
+description: 'A DNS query contained a long, high-entropy label, which can indicate generated domains or DNS tunnelling.'
+severity: low
+attack: [T1568.002]
+event_types: [dns_query]
+condition:
+  all:
+    - field: query_name
+      min_label_length: 12
+    - field: query_name
+      min_label_entropy: 3.7
