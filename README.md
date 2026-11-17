@@ -1,12 +1,34 @@
 # EDR Agent
 
-A **monitor-only** endpoint detection project: a C++ agent that collects process, file,
-registry and network telemetry from Windows **Sysmon** and **ETW**, evaluates it against YAML
-behavioral rules, and scores whole process trees with a **multi-signal risk engine**, plus a
-FastAPI server that re-scores the telemetry independently and a React dashboard that shows
-*why* each incident scored what it did.
+**A monitor-only endpoint detection and response (EDR) system: a C++ agent watches Windows process, file, registry and network activity, and a scoring engine flags attack chains instead of single noisy alerts.**
+It solves alert fatigue: "PowerShell ran an encoded command" is common and mostly harmless, but *Office → encoded PowerShell → connection to a never-seen IP* on one process tree is an attack, and EDR Agent scores that combination and shows exactly why.
 
-![CI](../../actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/arjunpotluri7-spec/edr-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/arjunpotluri7-spec/edr-agent/actions/workflows/ci.yml)
+
+![Walkthrough: incident list, a 100/100 phishing-chain incident with its score breakdown and process tree, a 60/100 LOLBin download, and the agent's terminal output](docs/media/walkthrough.gif)
+
+*Real screens from this repo running on a Mac: the agent replayed the synthetic Sysmon recordings in `samples/`, the forwarder sent them to the FastAPI server, and the React dashboard shows the result. No real hosts were monitored.*
+
+**Tech stack:** C++20 (CMake, GoogleTest, Windows Sysmon + ETW APIs) · Python 3.11+ (FastAPI, SQLAlchemy, Alembic) · PostgreSQL · React + TypeScript (Vite) · Docker Compose · GitHub Actions (Linux, macOS and Windows/MSVC builds)
+
+**Highlights**
+- Multi-signal risk scoring per process tree with correlation rules (e.g. encoded PowerShell + anomalous outbound connection = critical), every point explained
+- The same scoring engine in C++ (agent) and Python (server); a test proves both give byte-identical results
+- 90 agent tests, 85 server tests and 9 dashboard tests, plus sanitizer builds, all run in CI
+
+**Run it locally (macOS/Linux, no Windows needed):**
+
+```bash
+cd agent && cmake --preset dev && cmake --build --preset dev
+./build/dev/edr-agent replay ../samples/scenario_2_phishing_chain.jsonl --stdout \
+    --rules-dir ../rules/detections --scoring ../rules/scoring.yaml --baseline ../samples/baseline.json
+```
+
+Full stack with Docker: `docker compose up --build` (dashboard on http://127.0.0.1:8080). Step-by-step setup is in [Build & install](#build--install).
+
+| Incident list | Incident detail | Agent output |
+|---|---|---|
+| ![Incident list](docs/media/incidents.png) | ![Incident detail with score breakdown](docs/media/incident-detail.png) | ![Agent replay in a terminal](docs/media/agent-replay.png) |
 
 > **Scope.** EDR Agent only observes telemetry that Windows already produces and reports it.
 > It never blocks, kills, quarantines, hooks or injects into processes, never hides or persists
